@@ -37,6 +37,7 @@ include_recipe 'ossec'
 
 dbag_name = node['ossec']['data_bag']['name']
 dbag_item = node['ossec']['data_bag']['ssh']
+
 if node['ossec']['data_bag']['encrypted']
   ossec_key = Chef::EncryptedDataBagItem.load(dbag_name, dbag_item)
 else
@@ -69,4 +70,17 @@ file "#{node['ossec']['user']['dir']}/etc/client.keys" do
   owner 'ossecd'
   group 'ossec'
   mode 0660
+end
+
+execute 'change_permissions' do
+  command "chown -R ossecd.ossec #{node['ossec']['user']['dir']}; chmod -R u+w #{node['ossec']['user']['dir']}"
+end
+
+ohai 'ohai_reload' do
+  action :reload
+end
+
+execute 'register_agent' do
+  command "#{node['ossec']['user']['dir']}/bin/agent-auth -m #{node.set['ossec']['user']['agent_server_ip']} -p #{node['ossec']['authd']['port']} -A #{node['fqdn']}"
+  not_if "test -s #{node['ossec']['user']['dir']}/etc/client.keys"
 end

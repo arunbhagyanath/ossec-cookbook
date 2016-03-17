@@ -19,6 +19,15 @@
 
 include_recipe 'build-essential'
 
+package 'Install OpenSSL dev' do
+  case node[:platform_family]
+  when 'rhel'
+    package_name 'openssl-devel'
+  when 'debian'
+    package_name 'libssl-dev'
+  end
+end
+
 ossec_dir = "ossec-hids-#{node['ossec']['version']}"
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{ossec_dir}.tar.gz" do
@@ -60,7 +69,7 @@ template "#{node['ossec']['user']['dir']}/etc/ossec.conf" do
   group 'ossec'
   mode 0440
   variables(ossec: node['ossec']['user'])
-  notifies :restart, 'service[ossec]'
+  notifies :restart, 'service[ossec]', :delayed
   not_if { node['ossec']['disable_config_generation'] }
 end
 
@@ -75,5 +84,10 @@ end
 
 service 'ossec' do
   supports status: true, restart: true
-  action [:enable, :start]
+  action :enable
+end
+
+ohai 'reload_hostname' do
+  plugin 'hostname'
+  action :reload
 end
