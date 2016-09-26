@@ -56,6 +56,7 @@ default['ossec']['user']['firewall_response'] = true
 default['ossec']['user']['pf'] = false
 default['ossec']['user']['pf_table'] = false
 default['ossec']['user']['white_list'] = []
+default['ossec']['syscheck_extra_dirs'] = nil
 
 # web-ui only
 default['ossec']['wui']['checksum']     = '322e3d8042f94ee97c133882e5e38779c9f83c6617c03c56130a0d79fa384873'

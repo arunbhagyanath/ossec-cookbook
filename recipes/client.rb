@@ -72,14 +72,6 @@ file "#{node['ossec']['user']['dir']}/etc/client.keys" do
   mode 0660
 end
 
-execute 'change_permissions' do
-  command "chown -R ossecd.ossec #{node['ossec']['user']['dir']}; chmod -R u+w #{node['ossec']['user']['dir']}"
-end
-
-ohai 'ohai_reload' do
-  action :reload
-end
-
 execute 'register_agent' do
   command "#{node['ossec']['user']['dir']}/bin/agent-auth -m #{node.set['ossec']['user']['agent_server_ip']} -p #{node['ossec']['authd']['port']} -A #{node['fqdn']}"
   not_if "test -s #{node['ossec']['user']['dir']}/etc/client.keys"

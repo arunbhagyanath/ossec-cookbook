@@ -95,7 +95,9 @@
     <!-- Directories to check  (perform all possible verifications) -->
     <directories check_all="yes">/etc,/usr/bin,/usr/sbin</directories>
     <directories check_all="yes">/bin,/sbin</directories>
-
+    <% if @ossec['syscheck_extra_dirs'] -%>
+    	<directories check_all="yes"><%= node['ossec']['syscheck_extra_dirs']%></directories>
+    <% end -%>
     <!-- Files/directories to ignore -->
     <ignore>/etc/mtab</ignore>
     <ignore>/etc/mnttab</ignore>

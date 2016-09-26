@@ -28,6 +28,14 @@ package 'Install OpenSSL dev' do
   end
 end
 
+user 'ossecd' do
+  comment 'OSSEC Distributor'
+  shell '/bin/bash'
+  system true
+  gid 'ossec'
+  home node['ossec']['user']['dir']
+end
+
 ossec_dir = "ossec-hids-#{node['ossec']['version']}"
 
 remote_file "#{Chef::Config[:file_cache_path]}/#{ossec_dir}.tar.gz" do
@@ -90,4 +98,8 @@ end
 ohai 'reload_hostname' do
   plugin 'hostname'
   action :reload
+end
+
+execute 'change_permissions' do
+  command "chown -R ossecd.ossec #{node['ossec']['user']['dir']}; chmod -R 2770 #{node['ossec']['user']['dir']}"
 end
